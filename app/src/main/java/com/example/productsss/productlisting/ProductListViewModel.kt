@@ -8,6 +8,7 @@ import com.example.productsss.data.repository.DataRepositorySource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +21,7 @@ class ProductListViewModel @Inject constructor(
         viewModelScope.launch {
             productListData.value = Resource.Loading()
             dataRepository.fetchProductListData().collect {
+                Timber.d("DataRepository is called!!!")
                 productListData.value = it
             }
         }

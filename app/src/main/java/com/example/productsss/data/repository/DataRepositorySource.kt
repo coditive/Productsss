@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface DataRepositorySource {
 
-    suspend fun fetchProductListData(): Flow<Resource<List<Product>>>
+    fun fetchProductListData(): Flow<Resource<List<Product>>>
 
 }

@@ -13,8 +13,6 @@ import com.example.productsss.R
 import com.example.productsss.data.local.model.Product
 
 class ProductListAdapter : ListAdapter<Product, ProductListViewHolder>(CALLBACK) {
-
-
     companion object {
 
         val CALLBACK = object : DiffUtil.ItemCallback<Product>() {
@@ -32,7 +30,7 @@ class ProductListAdapter : ListAdapter<Product, ProductListViewHolder>(CALLBACK)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductListViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val view = layoutInflater.inflate(R.layout.layout_item_product_listing, parent)
+        val view = layoutInflater.inflate(R.layout.layout_item_product_listing, parent, false)
         return ProductListViewHolder(view)
     }
 
