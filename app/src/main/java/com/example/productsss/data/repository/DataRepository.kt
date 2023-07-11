@@ -67,8 +67,7 @@ class DataRepository @Inject constructor(
                     RequestBody.create("application/json".toMediaTypeOrNull(), json)
 
                 val imageRequestBody = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
-                val imagePart =
-                    MultipartBody.Part.createFormData("image", file.name, imageRequestBody)
+                val imagePart = MultipartBody.Part.createFormData("files[]", file.name, imageRequestBody)
                 emit(apiService.addProductToServerWithPhoto(productDataRequestBody, imagePart))
             } else {
                 emit(apiService.addProductToServer(addProductToServerRequest))

@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.productsss.R
 import com.example.productsss.data.Resource
 import com.example.productsss.data.remote.model.AddProductToServerRequest
@@ -29,7 +30,7 @@ import java.io.InputStream
 
 
 @AndroidEntryPoint
-class ProductAddFragment: Fragment() {
+class ProductAddFragment : Fragment() {
 
     private val viewModel by viewModels<ProductAddViewModel>()
 
@@ -40,6 +41,7 @@ class ProductAddFragment: Fragment() {
     private lateinit var productPrice: EditText
     private lateinit var productTax: EditText
     private lateinit var openGalleryImageView: ImageView
+    private lateinit var selectedPhotoImageView: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,6 +59,7 @@ class ProductAddFragment: Fragment() {
         productType = view.findViewById(R.id.productTypeEdt)
         productTax = view.findViewById(R.id.productTaxEdt)
         openGalleryImageView = view.findViewById(R.id.openGalleryButton)
+        selectedPhotoImageView = view.findViewById(R.id.productImage)
 
         view.findViewById<Button>(R.id.addProductButton).setOnClickListener {
             view.hideKeyboard()
@@ -104,6 +107,7 @@ class ProductAddFragment: Fragment() {
             val fileName: String = getFilePathFromUri(requireContext(), selectedImageUri)!!
             Timber.d("FileName = $fileName")
             file = File(fileName)
+            Glide.with(requireContext()).load(file).into(selectedPhotoImageView)
         }
     }
 
