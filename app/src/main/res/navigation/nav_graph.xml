@@ -9,6 +9,15 @@
         android:id="@+id/productListingFragment"
         android:name="com.example.productsss.productlisting.ProductListingFragment"
         android:label="ProductListingFragment"
-        tools:layout="@layout/fragment_product_listing"/>
+        tools:layout="@layout/fragment_product_listing">
+        <action
+            android:id="@+id/action_productListingFragment_to_productAddFragment"
+            app:destination="@id/productAddFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/productAddFragment"
+        android:name="com.example.productsss.productadd.ProductAddFragment"
+        android:label="ProductAddFragment"
+        tools:layout="@layout/fragment_product_add"/>
 
 </navigation>
