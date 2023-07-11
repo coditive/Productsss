@@ -5,15 +5,22 @@ import com.example.productsss.data.local.ProductListDao
 import com.example.productsss.data.local.model.Product
 import com.example.productsss.data.remote.ApiService
 import com.example.productsss.data.remote.model.AddProductToServerRequest
+import com.squareup.moshi.KotlinJsonAdapterFactory
+import com.squareup.moshi.Moshi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 import kotlin.random.Random
+
 
 class DataRepository @Inject constructor(
     private val productListDao: ProductListDao,
@@ -29,7 +36,14 @@ class DataRepository @Inject constructor(
             if (productListResponse.isSuccessful && productListResponse.body() != null) {
                 val productList = mutableListOf<Product>()
                 productListResponse.body()?.forEach {
-                    val product = Product(Random.nextLong(), it.image, it.price, it.productName, it.productType, it.tax)
+                    val product = Product(
+                        Random.nextLong(),
+                        it.image,
+                        it.price,
+                        it.productName,
+                        it.productType,
+                        it.tax
+                    )
                     productListDao.insertProduct(product)
                     productList.add(product)
                 }
@@ -40,11 +54,27 @@ class DataRepository @Inject constructor(
         }.flowOn(dispatcher)
     }
 
-    override fun addProductToProductList(addProductToServerRequest: AddProductToServerRequest): Flow<Resource<String>> {
+    override fun addProductToProductList(
+        addProductToServerRequest: AddProductToServerRequest,
+        file: File?
+    ): Flow<Resource<String>> {
         return flow {
-            emit(apiService.addProductToServer(addProductToServerRequest))
-        }.map {addProductResponse ->
-            if(addProductResponse.isSuccessful) {
+            if (file != null) {
+                val json = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                    .adapter(AddProductToServerRequest::class.java)
+                    .toJson(addProductToServerRequest)
+                val productDataRequestBody =
+                    RequestBody.create("application/json".toMediaTypeOrNull(), json)
+
+                val imageRequestBody = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                val imagePart =
+                    MultipartBody.Part.createFormData("image", file.name, imageRequestBody)
+                emit(apiService.addProductToServerWithPhoto(productDataRequestBody, imagePart))
+            } else {
+                emit(apiService.addProductToServer(addProductToServerRequest))
+            }
+        }.map { addProductResponse ->
+            if (addProductResponse.isSuccessful) {
                 Resource.Success(addProductResponse.message())
             } else {
                 Resource.DataError(addProductResponse.code())

@@ -6,6 +6,7 @@ import com.example.productsss.BuildConfig
 import com.example.productsss.data.local.ProductDB
 import com.example.productsss.data.local.ProductListDao
 import com.example.productsss.data.remote.ApiService
+import com.example.productsss.data.remote.converter.FileConverterFactory
 import com.example.productsss.data.repository.DataRepository
 import com.example.productsss.data.repository.DataRepositorySource
 import com.squareup.moshi.Moshi
@@ -67,6 +68,7 @@ object AppModule {
     ): ApiService = Retrofit.Builder()
         .baseUrl("https://app.getswipe.in/")
         .client(okHttpClient)
+        .addConverterFactory(FileConverterFactory())
         .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
         .build()
         .create(ApiService::class.java)

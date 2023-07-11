@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 
@@ -19,11 +20,11 @@ class ProductAddViewModel @Inject constructor(
 ): ViewModel() {
 
     val addProductResponse = MutableStateFlow<Resource<String>>(Resource.Success(""))
-    fun addProduct(addProductToServerRequest: AddProductToServerRequest) {
+    fun addProduct(addProductToServerRequest: AddProductToServerRequest, file: File?) {
         addProductResponse.value = Resource.Loading()
         viewModelScope.launch(Dispatchers.IO) {
             Timber.d("Add Product Called!!!")
-            dataRepository.addProductToProductList(addProductToServerRequest).collect{
+            dataRepository.addProductToProductList(addProductToServerRequest, file).collect{
                 addProductResponse.value = it
             }
         }
