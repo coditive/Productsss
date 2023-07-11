@@ -48,7 +48,7 @@ object AppModule {
         okHttpClient.addInterceptor(HttpLoggingInterceptor())
         if (BuildConfig.DEBUG) {
             val httpLoggingInterceptor = HttpLoggingInterceptor()
-            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
             okHttpClient.addInterceptor(httpLoggingInterceptor)
         }
         return okHttpClient.build()

@@ -13,6 +13,13 @@
         android:layout_gravity="center"
         android:layout_margin="20dp"/>
 
+    <ImageView
+        android:id="@+id/openGalleryButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/baseline_photo_camera_back_24"
+        android:layout_gravity="center"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

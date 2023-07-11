@@ -1,16 +1,18 @@
 package com.example.productsss.productadd
 
 import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
-import android.provider.OpenableColumns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
@@ -22,6 +24,8 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 
 @AndroidEntryPoint
@@ -35,6 +39,7 @@ class ProductAddFragment: Fragment() {
     private lateinit var productType: EditText
     private lateinit var productPrice: EditText
     private lateinit var productTax: EditText
+    private lateinit var openGalleryImageView: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +56,7 @@ class ProductAddFragment: Fragment() {
         productPrice = view.findViewById(R.id.productPriceEdt)
         productType = view.findViewById(R.id.productTypeEdt)
         productTax = view.findViewById(R.id.productTaxEdt)
+        openGalleryImageView = view.findViewById(R.id.openGalleryButton)
 
         view.findViewById<Button>(R.id.addProductButton).setOnClickListener {
             view.hideKeyboard()
@@ -63,6 +69,9 @@ class ProductAddFragment: Fragment() {
             viewModel.addProduct(product, file)
         }
 
+        openGalleryImageView.setOnClickListener {
+            openGallery()
+        }
 
         viewModel.addProductResponse.asLiveData().observe(viewLifecycleOwner) {
             when (it) {
@@ -92,27 +101,36 @@ class ProductAddFragment: Fragment() {
 
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == RESULT_OK && data != null) {
             val selectedImageUri: Uri = data.data!!
-            val fileName: String = getFileNameFromUri(selectedImageUri)
+            val fileName: String = getFilePathFromUri(requireContext(), selectedImageUri)!!
+            Timber.d("FileName = $fileName")
             file = File(fileName)
         }
     }
 
-    private fun getFileNameFromUri(uri: Uri): String {
-        var fileName: String? = null
-        if (uri.scheme == "content") {
-            requireActivity().contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-                if (cursor.moveToFirst()) {
-                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    if (nameIndex != -1) {
-                        fileName = cursor.getString(nameIndex)
-                    }
+    // Function to get the file path from a content URI
+    private fun getFilePathFromUri(context: Context, uri: Uri): String? {
+        if (uri == null) return null
+
+        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+        inputStream?.use { input ->
+            val outputFile = createTempFile(context, "temp_image", ".jpg")
+            val outputStream = FileOutputStream(outputFile)
+            outputStream.use { output ->
+                val buffer = ByteArray(4 * 1024) // Adjust buffer size as needed
+                var read: Int
+                while (input.read(buffer).also { read = it } != -1) {
+                    output.write(buffer, 0, read)
                 }
+                return outputFile.absolutePath
             }
         }
-        if (fileName == null) {
-            fileName = uri.lastPathSegment
-        }
-        return fileName.toString()
+        return null
+    }
+
+    // Function to create a temporary file
+    private fun createTempFile(context: Context, prefix: String, extension: String): File {
+        val dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(prefix, extension, dir)
     }
 
 }

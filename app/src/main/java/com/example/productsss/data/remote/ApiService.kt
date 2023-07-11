@@ -14,10 +14,9 @@ interface ApiService {
 
     @Multipart
     @POST("api/public/add")
-    @Headers("Content-Type: application/json;charset=UTF-8")
     suspend fun addProductToServerWithPhoto(
-    @Part addRequest: RequestBody,
-    @Part files: MultipartBody.Part?
+    @Part("addRequest") addRequest: RequestBody,
+    @Part files: MultipartBody.Part
     ): Response<String>
 
     @POST("api/public/add")
