@@ -6,6 +6,8 @@ import com.example.productsss.BuildConfig
 import com.example.productsss.data.local.ProductDB
 import com.example.productsss.data.local.ProductListDao
 import com.example.productsss.data.remote.ApiService
+import com.example.productsss.data.repository.DataRepository
+import com.example.productsss.data.repository.DataRepositorySource
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -69,6 +71,11 @@ object AppModule {
         .build()
         .create(ApiService::class.java)
 
-
+    @Singleton
+    @Provides
+    fun provideDataRepository(
+     productListDao: ProductListDao,
+     apiService: ApiService
+    ): DataRepositorySource = DataRepository(productListDao, apiService)
 
 }
