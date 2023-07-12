@@ -72,7 +72,6 @@ class ProductAddFragment : Fragment() {
 
     }
 
-
     private fun addListeners() {
         addProductButton.setOnClickListener {
             view?.hideKeyboard()

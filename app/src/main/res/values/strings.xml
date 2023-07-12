@@ -4,4 +4,13 @@
     <string name="price">Price :</string>
     <string name="type">Type :</string>
     <string name="name">Name :</string>
+    <string name="product_type">Product Type :</string>
+    <string name="enter_the_category">Enter the Category</string>
+    <string name="product_price">Product Price :</string>
+    <string name="enter_the_price">Enter the Price</string>
+    <string name="product_tax">Product Tax :</string>
+    <string name="enter_the_product_tax">Enter the Product Tax</string>
+    <string name="product_name">Product Name :</string>
+    <string name="enter_the_product_name">Enter the Product Name</string>
+    <string name="add">Add</string>
 </resources>
