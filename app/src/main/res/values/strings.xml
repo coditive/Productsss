@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Productsss</string>
+    <string name="tax">Tax :</string>
+    <string name="price">Price :</string>
+    <string name="type">Type :</string>
+    <string name="name">Name :</string>
 </resources>

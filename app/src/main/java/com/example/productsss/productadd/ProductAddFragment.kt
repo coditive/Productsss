@@ -79,7 +79,7 @@ class ProductAddFragment : Fragment() {
         viewModel.addProductResponse.asLiveData().observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.DataError -> {
-                    view.showSnackbar("Something Wrong happened!!", Snackbar.LENGTH_SHORT)
+                    view.showSnackbar("Some Thing Went Wrong !", Snackbar.LENGTH_SHORT)
                 }
                 is Resource.Loading -> {
 

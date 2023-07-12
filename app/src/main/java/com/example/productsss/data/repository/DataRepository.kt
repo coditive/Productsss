@@ -5,8 +5,7 @@ import com.example.productsss.data.local.ProductListDao
 import com.example.productsss.data.local.model.Product
 import com.example.productsss.data.remote.ApiService
 import com.example.productsss.data.remote.model.AddProductToServerRequest
-import com.squareup.moshi.KotlinJsonAdapterFactory
-import com.squareup.moshi.Moshi
+import com.example.productsss.data.remote.model.toMap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -49,7 +48,7 @@ class DataRepository @Inject constructor(
                 }
                 Resource.Success(productList.toList())
             } else {
-                Resource.DataError(404)
+                Resource.DataError(productListResponse.message())
             }
         }.flowOn(dispatcher)
     }
@@ -60,23 +59,24 @@ class DataRepository @Inject constructor(
     ): Flow<Resource<String>> {
         return flow {
             if (file != null) {
-                val json = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-                    .adapter(AddProductToServerRequest::class.java)
-                    .toJson(addProductToServerRequest)
-                val productDataRequestBody =
-                    RequestBody.create("application/json".toMediaTypeOrNull(), json)
+                val productRequestBody = MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("product_name", addProductToServerRequest.productName)
+                    .addFormDataPart("product_type", addProductToServerRequest.productType)
+                    .addFormDataPart("price", addProductToServerRequest.price)
+                    .addFormDataPart("tax", addProductToServerRequest.tax)
 
-                val imageRequestBody = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+                val imageRequestBody = RequestBody.create("form-data".toMediaTypeOrNull(), file)
                 val imagePart = MultipartBody.Part.createFormData("files[]", file.name, imageRequestBody)
-                emit(apiService.addProductToServerWithPhoto(productDataRequestBody, imagePart))
+                emit(apiService.addProductToServerWithPhoto(productRequestBody.build(), imagePart))
             } else {
-                emit(apiService.addProductToServer(addProductToServerRequest))
+                emit(apiService.addProductToServer(addProductToServerRequest.toMap()))
             }
         }.map { addProductResponse ->
             if (addProductResponse.isSuccessful) {
                 Resource.Success(addProductResponse.message())
             } else {
-                Resource.DataError(addProductResponse.code())
+                Resource.DataError(addProductResponse.code().toString())
             }
         }.flowOn(dispatcher)
     }

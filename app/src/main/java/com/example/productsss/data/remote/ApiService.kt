@@ -1,6 +1,6 @@
 package com.example.productsss.data.remote
 
-import com.example.productsss.data.remote.model.AddProductToServerRequest
+import com.example.productsss.data.remote.model.AddProductResponse
 import com.example.productsss.data.remote.model.ProductServerModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -19,12 +19,10 @@ interface ApiService {
     @Part files: MultipartBody.Part
     ): Response<String>
 
+    @FormUrlEncoded
     @POST("api/public/add")
     suspend fun addProductToServer(
-        @Body productData: AddProductToServerRequest
-    ): Response<String>
-
-
-
+       @FieldMap productData: Map<String, String>
+    ): Response<AddProductResponse>
 
 }

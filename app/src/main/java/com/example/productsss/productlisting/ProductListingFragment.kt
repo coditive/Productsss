@@ -36,7 +36,7 @@ class ProductListingFragment : Fragment() {
         productAdapter = ProductListAdapter()
         productListRv.apply {
             adapter = productAdapter
-            layoutManager = GridLayoutManager(requireContext(), 3)
+            layoutManager = GridLayoutManager(requireContext(), 2)
         }
         viewModel.getProductList()
 
