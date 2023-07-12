@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.productsss.R
 import com.example.productsss.data.Resource
+import com.example.productsss.productadd.hideKeyboard
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,24 +40,20 @@ class ProductListingFragment : Fragment() {
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                viewModel.performSearch(query.toString())
+                viewModel.performSearch(query)
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                if(newText.isNullOrEmpty()) {
-                    viewModel.getProductList()
-                } else {
-                    viewModel.performSearch(newText)
-                }
+                viewModel.performSearch(newText)
                 return true
             }
 
         })
 
-
         searchView.setOnCloseListener{
             viewModel.getProductList()
+            view.hideKeyboard()
             false
         }
 
@@ -71,7 +68,7 @@ class ProductListingFragment : Fragment() {
             findNavController().navigate(R.id.action_productListingFragment_to_productAddFragment)
         }
 
-        viewModel.productListData.asLiveData().observe(viewLifecycleOwner) {
+        viewModel.productList.asLiveData().observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.DataError -> {
 
