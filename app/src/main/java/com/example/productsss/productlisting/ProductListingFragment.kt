@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
@@ -20,6 +21,7 @@ class ProductListingFragment : Fragment() {
 
     private lateinit var productListRv: RecyclerView
     private lateinit var productAdapter: ProductListAdapter
+    private lateinit var searchView: SearchView
     private val viewModel by viewModels<ProductListViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,6 +35,31 @@ class ProductListingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         productListRv = view.findViewById(R.id.productListRv)
+        searchView = view.findViewById(R.id.searchView)
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                viewModel.performSearch(query.toString())
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if(newText.isNullOrEmpty()) {
+                    viewModel.getProductList()
+                } else {
+                    viewModel.performSearch(newText)
+                }
+                return true
+            }
+
+        })
+
+
+        searchView.setOnCloseListener{
+            viewModel.getProductList()
+            false
+        }
+
         productAdapter = ProductListAdapter()
         productListRv.apply {
             adapter = productAdapter
@@ -58,6 +85,5 @@ class ProductListingFragment : Fragment() {
                 }
             }
         }
-
     }
 }

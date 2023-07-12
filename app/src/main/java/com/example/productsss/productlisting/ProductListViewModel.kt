@@ -27,4 +27,17 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    fun clearSearchResult() {
+        productListData.value = Resource.Success(listOf())
+    }
+
+    fun performSearch(query: String) {
+        viewModelScope.launch {
+            productListData.value = Resource.Loading()
+            dataRepository.performSearchInDB(query).collect {
+                productListData.value = Resource.Success(it)
+            }
+        }
+    }
+
 }

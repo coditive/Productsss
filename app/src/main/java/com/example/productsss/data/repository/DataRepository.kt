@@ -80,4 +80,8 @@ class DataRepository @Inject constructor(
             }
         }.flowOn(dispatcher)
     }
+
+    override fun performSearchInDB(query: String): Flow<List<Product>> {
+        return productListDao.searchByName(query)
+    }
 }

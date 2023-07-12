@@ -12,4 +12,6 @@ interface DataRepositorySource {
 
     fun addProductToProductList(addProductToServerRequest: AddProductToServerRequest, file: File?): Flow<Resource<String>>
 
+    fun performSearchInDB(query: String): Flow<List<Product>>
+
 }

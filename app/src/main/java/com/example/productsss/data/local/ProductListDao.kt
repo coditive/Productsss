@@ -16,4 +16,6 @@ interface ProductListDao {
     @Query("SELECT * FROM product")
     fun getProductList(): Flow<List<Product>>
 
+    @Query("SELECT * FROM product WHERE productName LIKE :query")
+    fun searchByName(query: String): Flow<List<Product>>
 }
