@@ -7,6 +7,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextUtils
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,6 +45,7 @@ class ProductAddFragment : Fragment() {
     private lateinit var productTax: EditText
     private lateinit var openGalleryImageView: ImageView
     private lateinit var selectedPhotoImageView: ImageView
+    private lateinit var addProductButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,9 +64,18 @@ class ProductAddFragment : Fragment() {
         productTax = view.findViewById(R.id.productTaxEdt)
         openGalleryImageView = view.findViewById(R.id.openGalleryButton)
         selectedPhotoImageView = view.findViewById(R.id.productImage)
+        addProductButton = view.findViewById(R.id.addProductButton)
 
-        view.findViewById<Button>(R.id.addProductButton).setOnClickListener {
-            view.hideKeyboard()
+        addObserversOnEditTextFields()
+
+        addListeners()
+
+    }
+
+
+    private fun addListeners() {
+        addProductButton.setOnClickListener {
+            view?.hideKeyboard()
             val product = AddProductToServerRequest(
                 productName.text.toString(),
                 productType.text.toString(),
@@ -79,7 +92,7 @@ class ProductAddFragment : Fragment() {
         viewModel.addProductResponse.asLiveData().observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.DataError -> {
-                    view.showSnackbar("Some Thing Went Wrong !", Snackbar.LENGTH_SHORT)
+                    view?.showSnackbar("Some Thing Went Wrong !", Snackbar.LENGTH_SHORT)
                 }
                 is Resource.Loading -> {
 
@@ -87,11 +100,118 @@ class ProductAddFragment : Fragment() {
                 is Resource.Success -> {
                     if (it.data?.isNotEmpty() == true) {
                         Timber.d("Request made successfully -> ${it.data}")
+                        view?.showSnackbar("Product Added SuccessFully !!", Snackbar.LENGTH_SHORT)
                         findNavController().navigateUp()
                     }
                 }
             }
         }
+
+        viewModel.addProductDataFlow.asLiveData().observe(viewLifecycleOwner) {
+            when (it.errorField) {
+                ErrorFieldEnum.NONE -> {}
+                ErrorFieldEnum.PRODUCT_NAME -> {
+                    productName.error = it.errorMessage
+                }
+                ErrorFieldEnum.PRODUCT_TYPE -> {
+                    productType.error = it.errorMessage
+                }
+                ErrorFieldEnum.PRODUCT_PRICE -> {
+                    productPrice.error = it.errorMessage
+                }
+                ErrorFieldEnum.PRODUCT_TAX -> {
+                    productTax.error = it.errorMessage
+                }
+                ErrorFieldEnum.RE_PRODUCT_NAME -> {
+                    productName.error = null
+                }
+                ErrorFieldEnum.RE_PRODUCT_TYPE -> {
+                    productType.error = null
+                }
+                ErrorFieldEnum.RE_PRODUCT_PRICE -> {
+                    productPrice.error = null
+                }
+                ErrorFieldEnum.RE_PRODUCT_TAX -> {
+                    productTax.error = null
+                }
+            }
+        }
+    }
+
+    private fun areFieldsWithErrors(): Boolean =
+        TextUtils.isEmpty(productName.text.toString().trim { it <= ' ' }) || TextUtils.isEmpty(
+            productType.text.toString().trim { it <= ' ' }) ||
+                TextUtils.isEmpty(
+                    productPrice.text.toString().trim { it <= ' ' }) || TextUtils.isEmpty(
+            productTax.text.toString().trim { it <= ' ' })
+
+
+    private fun addObserversOnEditTextFields() {
+        productName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.setProductName(s.toString())
+                addProductButton.isEnabled = !areFieldsWithErrors()
+            }
+
+        })
+
+        productPrice.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.setProductPrice(s.toString())
+                addProductButton.isEnabled = !areFieldsWithErrors()
+            }
+
+        })
+
+        productType.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.setProductType(s.toString())
+                addProductButton.isEnabled = !areFieldsWithErrors()
+            }
+
+        })
+
+        productTax.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.setProductTax(s.toString())
+                addProductButton.isEnabled = !areFieldsWithErrors()
+            }
+
+        })
+
+
     }
 
     private fun openGallery() {
@@ -117,7 +237,7 @@ class ProductAddFragment : Fragment() {
 
         val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
         inputStream?.use { input ->
-            val outputFile = createTempFile(context, "temp_image", ".jpg")
+            val outputFile = createTempFile(context, "temp_image", ".JPEG")
             val outputStream = FileOutputStream(outputFile)
             outputStream.use { output ->
                 val buffer = ByteArray(4 * 1024) // Adjust buffer size as needed
