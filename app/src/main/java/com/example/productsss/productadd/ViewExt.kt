@@ -1,6 +1,7 @@
 package com.example.productsss.productadd
 
 import android.app.Service
+import android.icu.text.DecimalFormat
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
@@ -31,4 +32,10 @@ fun View.showKeyboard() {
 fun View.hideKeyboard() {
     (this.context.getSystemService(Service.INPUT_METHOD_SERVICE) as? InputMethodManager)
         ?.hideSoftInputFromWindow(this.windowToken, 0)
+}
+
+fun TextView.truncateAfterTwoPrecisionDigits(value: String) {
+    val decimalFormat = DecimalFormat("0.00")
+    val truncatedValue = decimalFormat.format(value.toDouble())
+    this.text = truncatedValue
 }

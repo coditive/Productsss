@@ -59,16 +59,18 @@ class DataRepository @Inject constructor(
     ): Flow<Resource<String>> {
         return flow {
             if (file != null) {
-                val productRequestBody = MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("product_name", addProductToServerRequest.productName)
-                    .addFormDataPart("product_type", addProductToServerRequest.productType)
-                    .addFormDataPart("price", addProductToServerRequest.price)
-                    .addFormDataPart("tax", addProductToServerRequest.tax)
-
                 val imageRequestBody = RequestBody.create("form-data".toMediaTypeOrNull(), file)
-                val imagePart = MultipartBody.Part.createFormData("files[]", file.name, imageRequestBody)
-                emit(apiService.addProductToServerWithPhoto(productRequestBody.build(), imagePart))
+                val imagePart =
+                    MultipartBody.Part.createFormData("files[]", file.name, imageRequestBody)
+                emit(
+                    apiService.addProductToServerWithPhoto(
+                        addProductToServerRequest.productName,
+                        addProductToServerRequest.productType,
+                        addProductToServerRequest.price,
+                        addProductToServerRequest.tax,
+                        imagePart
+                    )
+                )
             } else {
                 emit(apiService.addProductToServer(addProductToServerRequest.toMap()))
             }

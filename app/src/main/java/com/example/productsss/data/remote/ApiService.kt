@@ -3,7 +3,6 @@ package com.example.productsss.data.remote
 import com.example.productsss.data.remote.model.AddProductResponse
 import com.example.productsss.data.remote.model.ProductServerModel
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -15,9 +14,12 @@ interface ApiService {
     @Multipart
     @POST("api/public/add")
     suspend fun addProductToServerWithPhoto(
-    @Part("addRequest") addRequest: RequestBody,
+    @Part("product_name") productName: String,
+    @Part("product_type") productType: String,
+    @Part("price") price: String,
+    @Part("tax") tax: String,
     @Part files: MultipartBody.Part
-    ): Response<String>
+    ): Response<AddProductResponse>
 
     @FormUrlEncoded
     @POST("api/public/add")

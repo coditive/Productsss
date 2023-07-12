@@ -13,13 +13,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.productsss.R
 import com.example.productsss.data.local.model.Product
+import com.example.productsss.productadd.truncateAfterTwoPrecisionDigits
 
 class ProductListAdapter : ListAdapter<Product, ProductListViewHolder>(CALLBACK) {
     companion object {
 
         val CALLBACK = object : DiffUtil.ItemCallback<Product>() {
             override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
-                return oldItem.productId == newItem.productId
+                return oldItem.image == newItem.image
             }
 
             override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
@@ -70,10 +71,13 @@ class ProductListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
 
         itemView.findViewById<TextView>(R.id.productType).text = product.productType
 
-        itemView.findViewById<TextView>(R.id.productPrice).text = product.price.toString()
+        itemView.findViewById<TextView>(R.id.productPrice).truncateAfterTwoPrecisionDigits(
+            product.price.toString()
+        )
 
-        itemView.findViewById<TextView>(R.id.productTax).text = product.tax.toString()
-
+        itemView.findViewById<TextView>(R.id.productTax).truncateAfterTwoPrecisionDigits(
+            product.tax.toString()
+        )
     }
 
 }
